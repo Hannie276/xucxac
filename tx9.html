@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Xúc xắc Trắng/Đen</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 30px;
+    }
+
+    img.avatar {
+      width: 120px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 8px #aaa;
+    }
+
+    button {
+      font-size: 20px;
+      padding: 10px 25px;
+      margin-bottom: 20px;
+    }
+
+    #result {
+      font-size: 30px;
+      font-weight: bold;
+      margin: 20px 0;
+      color: red;
+    }
+
+    .dice-bowl {
+      margin: 0 auto;
+      background: #eee;
+      width: 160px;
+      height: 100px;
+      border-radius: 80px / 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      box-shadow: inset 0 0 10px #999;
+    }
+
+    .dice {
+      font-size: 40px;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .shaking {
+      animation: shake 0.5s;
+    }
+
+    @keyframes shake {
+      0%   { transform: rotate(0deg); }
+      25%  { transform: rotate(15deg); }
+      50%  { transform: rotate(-15deg); }
+      75%  { transform: rotate(10deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    .history-container {
+      margin-top: 30px;
+      padding: 20px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      background-color: #f9f9f9;
+    }
+
+    #history {
+      display: grid;
+      grid-template-columns: repeat(15, 40px);
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .ball {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 16px;
+      border: 2px solid #444;
+    }
+
+    .white-ball {
+      background-color: red;
+    }
+
+    .black-ball {
+      background-color: black;
+    }
+
+    h2 {
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎲 Trắng hay Đen?</h1>
+
+  <!-- Ảnh bạn -->
+  <img src="avatar.jpg" alt="Ảnh người chơi" class="avatar">
+
+  <!-- Bát xúc xắc -->
+  <div class="dice-bowl">
+    <div class="dice" id="dice1">⚀</div>
+    <div class="dice" id="dice2">⚀</div>
+    <div class="dice" id="dice3">⚀</div>
+  </div>
+
+  <button onclick="chanDoan()">Xúc xúc xắc</button>
+
+  <div id="result"></div>
+
+  <div class="history-container">
+    <h2>Lịch sử kết quả</h2>
+    <div id="history"></div>
+  </div>
+
+  <!-- Âm thanh xúc xắc -->
+  <audio id="dice-sound" src="https://www.soundjay.com/misc/sounds/dice-roll-1.mp3" preload="auto"></audio>
+
+  <script>
+    const diceUnicode = ["⚀", "⚁", "⚂", "⚃", "⚄", "⚅"];
+
+    function tungXucXac() {
+      return Math.floor(Math.random() * 6) + 1;
+    }
+
+    function chanDoan() {
+      const diceEls = [
+        document.getElementById("dice1"),
+        document.getElementById("dice2"),
+        document.getElementById("dice3")
+      ];
+
+      // Phát âm thanh
+      const sound = document.getElementById("dice-sound");
+      sound.currentTime = 0;
+      sound.play();
+
+      // Lắc xúc xắc
+      diceEls.forEach(el => el.classList.add("shaking"));
+
+      setTimeout(() => {
+        const x1 = tungXucXac();
+        const x2 = tungXucXac();
+        const x3 = tungXucXac();
+        const tong = x1 + x2 + x3;
+
+        diceEls[0].innerText = diceUnicode[x1 - 1];
+        diceEls[1].innerText = diceUnicode[x2 - 1];
+        diceEls[2].innerText = diceUnicode[x3 - 1];
+
+        diceEls.forEach(el => el.classList.remove("shaking"));
+
+        const ketQua = tong <= 10 ? "Trắng" : "Đen";
+        document.getElementById("result").innerHTML = `<span style="color: red;"></span>`;
+
+        const ball = document.createElement("div");
+        ball.classList.add("ball");
+        ball.classList.add(ketQua === "Trắng" ? "white-ball" : "black-ball");
+        ball.innerText = tong;
+        document.getElementById("history").appendChild(ball);
+      }, 500);
+    }
+  </script>
+
+</body>
+</html>
